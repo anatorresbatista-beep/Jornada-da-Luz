@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5e9c9">
+  <title>A Jornada da Luce até a Santa Missa</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #273b37;
+      --muted: #63766d;
+      --paper: #fffaf0;
+      --paper-deep: #f2e8d3;
+      --green: #376d57;
+      --green-dark: #285444;
+      --coral: #de745d;
+      --gold: #e8b84f;
+      --sky: #ccecf2;
+      --line: #ded8c6;
+      --serif: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+      --sans: "Trebuchet MS", "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #f5e9c9;
+      font-family: var(--sans);
+      min-height: 100vh;
+    }
+    button { font: inherit; }
+    button:focus-visible { outline: 3px solid #d29322; outline-offset: 3px; }
+    .page {
+      min-height: 100vh;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 14% 6%, rgba(255,255,255,.74), transparent 28rem),
+        repeating-linear-gradient(0deg, transparent 0 43px, rgba(128,102,52,.035) 43px 44px),
+        #f5e9c9;
+    }
+    .topbar {
+      width: min(1140px, calc(100% - 40px));
+      margin: 0 auto;
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid rgba(87, 97, 72, .22);
+      position: relative;
+      z-index: 2;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-family: var(--serif); font-weight: 700; font-size: 17px; }
+    .brand-mark { display: grid; place-items: center; width: 35px; height: 35px; border-radius: 50%; color: #fff8df; background: var(--green); font-size: 19px; }
+    .tools { display: flex; align-items: center; gap: 9px; }
+    .tool-button {
+      border: 1px solid rgba(71, 99, 79, .28); background: rgba(255,250,240,.58); color: var(--green-dark);
+      width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; font-size: 17px;
+      transition: background .2s, transform .2s;
+    }
+    .tool-button:hover { background: white; transform: translateY(-2px); }
+    .tool-button[aria-pressed="true"] { background: var(--green); color: white; }
+    main { width: min(1060px, calc(100% - 40px)); margin: 0 auto; padding: 18px 0 46px; }
+    .intro { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 17px; }
+    .eyebrow { margin: 0 0 5px; color: #98713c; text-transform: uppercase; letter-spacing: 1.5px; font-size: 11px; font-weight: 800; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 0; font: 700 clamp(25px, 4vw, 37px)/1.12 var(--serif); letter-spacing: 0; }
+    .intro-note { max-width: 300px; margin: 0 0 2px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .journey { overflow: hidden; border: 1px solid rgba(91, 118, 91, .26); border-radius: 8px; background: #ccecf2; box-shadow: 0 10px 28px rgba(95, 83, 48, .1); }
+    .scene { width: 100%; height: clamp(200px, 29vw, 278px); display: block; }
+    #luce { transition: transform 1.25s cubic-bezier(.2,.8,.25,1); transform-origin: center; }
+    #church { transition: filter .8s; }
+    .float-cloud { animation: drift 18s ease-in-out infinite alternate; }
+    .float-cloud.cloud-two { animation-delay: -8s; }
+    .scene-sparkle { animation: twinkle 2.4s ease-in-out infinite alternate; transform-origin: center; }
+    .scene-sparkle:nth-of-type(2) { animation-delay: .8s; }
+    @keyframes drift { to { transform: translateX(28px); } }
+    @keyframes twinkle { to { opacity: .35; transform: scale(.75); } }
+    .journey-footer { min-height: 60px; padding: 10px 18px; display: flex; align-items: center; gap: 17px; background: #fffcf2; }
+    .stage-stamp { flex: 0 0 auto; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; background: #e8f0d7; color: var(--green); font-weight: 800; }
+    .journey-copy { flex: 1; min-width: 0; }
+    .journey-copy strong { display: block; font: 700 15px var(--serif); }
+    .journey-copy span { color: var(--muted); font-size: 12px; }
+    .progress-track { width: min(245px, 29%); height: 9px; border-radius: 9px; background: #e6e3d4; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, #81a96e, #e5bb58); transition: width .7s ease; }
+    .score-chip { flex: 0 0 auto; padding: 8px 11px; border-radius: 20px; color: #72531e; background: #f8ebc8; font-size: 12px; font-weight: 800; }
+    .play-area { display: grid; grid-template-columns: minmax(0, 1fr) 235px; gap: 23px; align-items: start; margin-top: 21px; }
+    .challenge-panel { min-height: 292px; padding: 23px 25px 22px; border: 1px solid rgba(107, 101, 76, .2); border-radius: 8px; background: var(--paper); box-shadow: 0 7px 20px rgba(93, 81, 47, .07); }
+    .challenge-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 17px; }
+    .phase-label { color: #977544; text-transform: uppercase; letter-spacing: 1px; font-size: 10px; font-weight: 900; }
+    .question-count { color: var(--muted); font-size: 12px; }
+    h2 { margin-bottom: 9px; font: 700 clamp(20px, 3vw, 25px)/1.25 var(--serif); }
+    .prompt { max-width: 720px; margin-bottom: 20px; color: #53655e; line-height: 1.6; font-size: 15px; }
+    .visual-prompt { margin: -4px 0 14px; padding: 9px 13px; display: inline-flex; gap: 8px; align-items: center; border-radius: 5px; background: #f7edda; font-size: 22px; }
+    .answers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .answer-button, .path-button, .retry-button, .primary-button, .secondary-button {
+      min-height: 48px; padding: 11px 14px; border: 1px solid #c9d2bd; border-radius: 5px; background: #fffefa; color: var(--ink); cursor: pointer;
+      font-weight: 700; transition: transform .18s, border-color .18s, background .18s, box-shadow .18s;
+    }
+    .answer-button:hover, .path-button:hover { transform: translateY(-2px); border-color: var(--green); box-shadow: 0 4px 11px rgba(55,109,87,.12); }
+    .answer-button:disabled, .path-button:disabled { cursor: default; opacity: .72; transform: none; }
+    .answer-button.correct { border-color: #78a36d; background: #e6f2dc; color: #315d3d; }
+    .answer-button.incorrect { border-color: #d78370; background: #fae7df; color: #934d3e; }
+    .feedback { min-height: 42px; margin: 15px 0 0; padding: 0; line-height: 1.45; font-size: 13px; color: var(--muted); }
+    .feedback.good { color: #326247; font-weight: 700; }
+    .feedback.bad { color: #9c4f3e; }
+    .retry-button { min-height: 36px; padding: 7px 12px; border-color: transparent; background: #f1eadb; color: #5f604d; font-size: 12px; }
+    .retry-button:hover, .secondary-button:hover { background: #e9dfcc; }
+    .next-button { min-height: 40px; margin-top: 8px; padding: 9px 16px; border: 0; border-radius: 5px; background: var(--green); color: #fffdf3; cursor: pointer; font-weight: 800; }
+    .next-button:hover, .primary-button:hover { background: var(--green-dark); transform: translateY(-1px); }
+    .side-note { padding: 4px 3px; }
+    .side-note h3 { margin: 0 0 8px; font: 700 17px var(--serif); }
+    .side-note p { margin-bottom: 16px; color: #66766a; line-height: 1.55; font-size: 13px; }
+    .phase-list { margin: 0; padding: 0; list-style: none; }
+    .phase-list li { display: flex; align-items: center; gap: 10px; padding: 9px 0; color: #778078; border-bottom: 1px solid rgba(108, 119, 98, .16); font-size: 12px; }
+    .phase-list li.active { color: var(--green-dark); font-weight: 800; }
+    .phase-list li.done { color: #598456; }
+    .phase-dot { display: grid; place-items: center; width: 23px; height: 23px; border: 1px solid #b8c2b2; border-radius: 50%; font-size: 10px; }
+    .phase-list li.active .phase-dot { border-color: var(--green); background: var(--green); color: white; }
+    .phase-list li.done .phase-dot { border-color: #8eae7d; background: #e1edcf; }
+    .footer-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 15px; }
+    .reset-button { border: 0; padding: 8px 0; background: transparent; color: #7b7361; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; font-size: 12px; }
+    .sound-caption { color: #7b7361; font-size: 11px; }
+    .maze { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 480px; margin: 7px 0 15px; padding: 13px; border-radius: 6px; background: #e9f1dc; }
+    .maze-cell { min-height: 44px; border-radius: 4px; display: grid; place-items: center; font-size: 20px; }
+    .maze-cell.wall { background: #b7c79e; }
+    .maze-cell.walk { background: rgba(255,255,255,.68); }
+    .maze-cell.start { background: #f7e6ae; }
+    .maze-cell.goal { background: #f7d7ca; }
+    .path-choices { display: flex; gap: 9px; flex-wrap: wrap; }
+    .path-button { min-width: 100px; min-height: 42px; }
+    .order-sequence { display: flex; gap: 8px; margin: -4px 0 16px; }
+    .order-tile { min-width: 52px; min-height: 48px; padding: 5px 8px; border: 1px solid #d6c9a7; border-radius: 5px; background: #fff6da; font-size: 16px; cursor: pointer; }
+    .order-tile.selected { outline: 3px solid #d29322; outline-offset: 2px; }
+    .order-help { margin: -8px 0 13px; color: var(--muted); font-size: 12px; }
+    .screen-cover { position: fixed; inset: 0; z-index: 5; display: grid; place-items: center; padding: 20px; background: rgba(35, 58, 48, .47); backdrop-filter: blur(4px); }
+    .screen-cover[hidden] { display: none; }
+    .cover-card { width: min(520px, 100%); padding: 34px; text-align: center; border: 1px solid rgba(255,255,255,.7); border-radius: 10px; background: var(--paper); box-shadow: 0 24px 70px rgba(31,48,37,.25); animation: rise .5s both; }
+    @keyframes rise { from { opacity: 0; transform: translateY(13px); } to { opacity: 1; transform: translateY(0); } }
+    .cover-art { width: min(310px, 90%); height: auto; margin: -4px auto 7px; display: block; }
+    .cover-card h2 { margin-bottom: 10px; font-size: clamp(28px, 6vw, 38px); }
+    .cover-card p { color: #5c7065; line-height: 1.65; }
+    .primary-button { min-width: 190px; border: 0; background: var(--green); color: white; }
+    .secondary-button { min-height: 43px; background: #f1eadb; }
+    .end-actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .inside-screen { background: rgba(37, 54, 45, .76); }
+    .inside-art { width: 100%; max-width: 400px; height: auto; margin: 2px auto 15px; display: block; }
+    .score-modal { width: min(360px, 100%); margin: 0 auto 15px; padding: 13px; border-radius: 5px; background: #f4edda; color: #5d684d; font-weight: 800; }
+    .celebrate #luce { animation: happy-hop .5s ease-in-out 2; }
+    @keyframes happy-hop { 50% { transform: translateY(-10px); } }
+    .door-open .door-leaf { transform: scaleX(.15); transform-box: fill-box; transform-origin: right; transition: transform 1.3s ease; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @media (max-width: 740px) {
+      main { width: min(100% - 24px, 590px); padding-top: 13px; }
+      .topbar { width: calc(100% - 24px); min-height: 62px; }
+      .intro { align-items: start; flex-direction: column; gap: 7px; margin-bottom: 12px; }
+      .intro-note { max-width: 520px; }
+      .scene { height: 210px; }
+      .journey-footer { padding: 9px 11px; gap: 9px; flex-wrap: wrap; }
+      .journey-copy { min-width: 130px; }
+      .progress-track { order: 4; width: 100%; }
+      .score-chip { margin-left: auto; }
+      .play-area { grid-template-columns: 1fr; gap: 13px; margin-top: 14px; }
+      .challenge-panel { min-height: 0; padding: 19px 16px; }
+      .side-note { padding: 0 4px; }
+      .side-note > p { display: none; }
+      .phase-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .phase-list li { border-bottom: 0; padding: 5px 0; font-size: 10px; }
+      .phase-dot { flex: 0 0 23px; }
+    }
+    @media (max-width: 430px) {
+      .brand { font-size: 14px; }
+      .tools { gap: 5px; }
+      .tool-button { width: 36px; height: 36px; }
+      .answers { grid-template-columns: 1fr; }
+      .answer-button { min-height: 44px; text-align: left; }
+      .scene { height: 185px; }
+      .journey-copy strong { font-size: 13px; }
+      .journey-copy span { font-size: 10px; }
+      .cover-card { padding: 26px 20px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">✝</span><span>Pequenos passos, grande jornada</span></div>
+      <div class="tools">
+        <button class="tool-button" id="soundToggle" type="button" aria-label="Ativar sons" aria-pressed="false" title="Ativar ou desativar sons">♫</button>
+        <button class="tool-button" id="restartTop" type="button" aria-label="Reiniciar jogo" title="Reiniciar jogo">↻</button>
+      </div>
+    </header>
+    <main>
+      <section class="intro" aria-labelledby="gameTitle">
+        <div><p class="eyebrow">Uma aventura de fé e raciocínio</p><h1 id="gameTitle">A Jornada da Luce até a Santa Missa</h1></div>
+        <p class="intro-note">Ajude a Luce a seguir o caminho, resolver os desafios e chegar à igreja. Cada resposta é um passo adiante!</p>
+      </section>
+      <section class="journey" aria-label="Cenário da jornada">
+        <svg class="scene" viewBox="0 0 1000 350" role="img" aria-labelledby="sceneTitle sceneDesc" preserveAspectRatio="xMidYMid meet">
+          <title id="sceneTitle">O caminho da Luce até a igreja</title>
+          <desc id="sceneDesc">Luce caminha por uma trilha entre flores e árvores em direção a uma igreja no alto da colina.</desc>
+          <defs>
+            <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#a9dfe9"/><stop offset="1" stop-color="#eff5d7"/></linearGradient>
+            <linearGradient id="hill" x2="0" y2="1"><stop stop-color="#99bd78"/><stop offset="1" stop-color="#709b68"/></linearGradient>
+            <linearGradient id="path" x2="0" y2="1"><stop stop-color="#e7ce91"/><stop offset="1" stop-color="#cba96b"/></linearGradient>
+          </defs>
+          <rect width="1000" height="350" fill="url(#sky)"/>
+          <g fill="#fffdf2" opacity=".9" class="float-cloud"><ellipse cx="182" cy="67" rx="48" ry="17"/><circle cx="160" cy="57" r="19"/><circle cx="190" cy="51" r="25"/><circle cx="215" cy="61" r="16"/></g>
+          <g fill="#fffdf2" opacity=".8" class="float-cloud cloud-two"><ellipse cx="595" cy="82" rx="38" ry="13"/><circle cx="579" cy="75" r="15"/><circle cx="602" cy="69" r="19"/><circle cx="623" cy="78" r="12"/></g>
+          <circle cx="868" cy="54" r="27" fill="#f6d777" opacity=".84"/>
+          <path d="M0 222 Q150 155 300 213 T620 194 Q825 143 1000 201 V350 H0Z" fill="#b9d094"/>
+          <path d="M0 249 Q210 180 424 239 T767 207 Q894 179 1000 217 V350 H0Z" fill="url(#hill)"/>
+          <path d="M315 350 Q416 297 521 281 Q627 260 739 198 Q792 168 847 168 Q782 233 746 281 Q696 325 663 350Z" fill="url(#path)" opacity=".97"/>
+          <path d="M418 350 Q494 309 560 294 Q652 273 766 204" fill="none" stroke="#f4e1af" stroke-width="4" stroke-dasharray="10 12" opacity=".75"/>
+          <g id="church" aria-label="Igreja">
+            <path d="M785 176 L833 143 L883 176 V228 H785Z" fill="#f8f0d9" stroke="#987e59" stroke-width="3"/>
+            <path d="M779 179 L833 138 L889 179" fill="#c66f58" stroke="#8e5545" stroke-width="4" stroke-linejoin="round"/>
+            <rect x="814" y="113" width="39" height="47" fill="#f7ecd0" stroke="#987e59" stroke-width="3"/>
+            <path d="M809 115 L833 91 L858 115Z" fill="#c66f58" stroke="#8e5545" stroke-width="3"/>
+            <path d="M833 77 V102 M825 85 H841" stroke="#86643d" stroke-width="4" stroke-linecap="round"/>
+            <path d="M826 137 Q833 123 840 137 V151 H826Z" fill="#91bdd1" stroke="#718a78" stroke-width="2"/>
+            <path class="door-leaf" d="M824 228 V199 Q833 184 844 199 V228Z" fill="#a26d4f" stroke="#805743" stroke-width="2"/>
+            <circle cx="839" cy="211" r="2" fill="#f5d37e"/>
+            <rect x="775" y="225" width="119" height="8" rx="2" fill="#e2d2b4"/>
+            <path d="M833 184 V222 M825 192 H841" stroke="#f2dda1" stroke-width="2" opacity=".8"/>
+          </g>
+          <g aria-hidden="true" fill="#51805c">
+            <path d="M75 248 V154" stroke="#765940" stroke-width="12"/><circle cx="75" cy="145" r="39"/><circle cx="48" cy="163" r="26"/><circle cx="101" cy="166" r="29"/>
+            <path d="M940 241 V155" stroke="#765940" stroke-width="12"/><circle cx="940" cy="142" r="42"/><circle cx="909" cy="160" r="28"/><circle cx="967" cy="166" r="30"/>
+          </g>
+          <g aria-hidden="true" fill="#f8f0d3"><path d="M22 300q8-19 16 0q8-19 16 0q-12 18-16 28q-5-10-16-28"/><path d="M274 274q8-19 16 0q8-19 16 0q-12 18-16 28q-5-10-16-28"/><path d="M916 285q8-19 16 0q8-19 16 0q-12 18-16 28q-5-10-16-28"/></g>
+          <g aria-hidden="true" fill="#e58a79"><circle cx="39" cy="299" r="5"/><circle cx="291" cy="273" r="5"/><circle cx="933" cy="284" r="5"/></g>
+          <g class="scene-sparkle" fill="#fff7c9"><path d="M704 99l4 11 11 4-11 4-4 11-4-11-11-4 11-4z"/><circle cx="679" cy="134" r="3"/></g>
+          <g class="scene-sparkle" fill="#fff7c9"><path d="M360 106l3 8 8 3-8 3-3 8-3-8-8-3 8-3z"/></g>
+          <g id="luce" transform="translate(185 238)" role="img" aria-label="Luce, uma menina alegre de cabelos coloridos">
+            <ellipse cx="0" cy="71" rx="23" ry="6" fill="#456c49" opacity=".3"/>
+            <path d="M-18 34 Q0 28 18 34 L21 62 Q0 70-20 61Z" fill="#f4c85f" stroke="#9b7542" stroke-width="2"/>
+            <path d="M-16 38 Q0 31 14 37 L13 56 Q0 62-15 56Z" fill="#79b5ad"/>
+            <path d="M-12 60 L-14 70 M10 60 L13 70" stroke="#a96b56" stroke-width="6" stroke-linecap="round"/>
+            <path d="M-20 69 H-8 M5 69 H18" stroke="#69584c" stroke-width="6" stroke-linecap="round"/>
+            <path d="M-17 39 Q-29 49-26 59 M16 40 Q28 47 23 55" fill="none" stroke="#f1bf93" stroke-width="7" stroke-linecap="round"/>
+            <path d="M-21 1 Q-24-24-4-28 Q17-29 22-7 L20 25 Q9 40-10 31 L-22 21Z" fill="#dd8e43"/>
+            <path d="M-21 0 Q-33-15-19-26 Q-9-37 1-28 Q9-39 21-25 Q30-10 19 2 L18-12 Q7-20-3-14 Q-11-19-19-10Z" fill="#e9a54c"/>
+            <path d="M-19-8 Q-32-2-25 13 L-20 20 M20-8 Q31 2 23 16" fill="none" stroke="#68a6a1" stroke-width="7" stroke-linecap="round"/>
+            <path d="M-14-5 Q0-15 15-5 L17 12 Q15 28 0 30 Q-15 27-17 12Z" fill="#f2c39c"/>
+            <path d="M-10 8 Q-7 5-4 8 M6 8 Q9 5 12 8" fill="none" stroke="#435650" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M-5 18 Q0 23 6 18" fill="none" stroke="#a85e50" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="-12" cy="15" r="3" fill="#e88d7c" opacity=".75"/><circle cx="13" cy="15" r="3" fill="#e88d7c" opacity=".75"/>
+            <path d="M0-27 V-19 M-5-23 H5" stroke="#f8e4a2" stroke-width="2.5" stroke-linecap="round"/>
+          </g>
+        </svg>
+        <div class="journey-footer">
+          <div class="stage-stamp" id="stageStamp" aria-hidden="true">1</div>
+          <div class="journey-copy"><strong id="journeyTitle">O Caminho das Sequências</strong><span id="journeySubtitle">Luce está começando sua caminhada</span></div>
+          <div class="progress-track" role="progressbar" aria-label="Progresso até a igreja" aria-valuemin="0" aria-valuemax="9" aria-valuenow="0"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="score-chip" aria-live="polite">✦ <span id="scoreValue">0</span> pontos</div>
+        </div>
+      </section>
+      <section class="play-area" aria-label="Desafio atual">
+        <div class="challenge-panel" id="challengePanel" aria-live="polite">
+          <div class="challenge-head"><span class="phase-label" id="phaseLabel">FASE 1 · PERCEPÇÃO DE PADRÕES</span><span class="question-count" id="questionCount">Desafio 1 de 3</span></div>
+          <h2 id="questionTitle">Uma aventura espera por você!</h2>
+          <p class="prompt" id="questionPrompt">Clique em “Começar aventura” para caminhar com a Luce.</p>
+          <div id="challengeVisual"></div>
+          <div class="answers" id="answerArea"></div>
+          <p class="feedback" id="feedback" role="status">Observe com atenção e escolha uma resposta. Você pode tentar de novo se precisar.</p>
+          <div id="continueArea"></div>
+        </div>
+        <aside class="side-note">
+          <h3>O mapa da jornada</h3>
+          <p>Use atenção e curiosidade. Errar também faz parte de aprender: leia a dica e tente outra vez.</p>
+          <ol class="phase-list" id="phaseList">
+            <li class="active"><span class="phase-dot">1</span>Sequências</li>
+            <li><span class="phase-dot">2</span>Enigmas</li>
+            <li><span class="phase-dot">3</span>Porta da igreja</li>
+          </ol>
+          <div class="footer-actions"><span class="sound-caption" id="soundCaption">Som desligado</span><button class="reset-button" id="restartBottom" type="button">Recomeçar jornada</button></div>
+        </aside>
+      </section>
+    </main>
+  </div>
+  <div class="screen-cover" id="startScreen">
+    <div class="cover-card">
+      <svg class="cover-art" viewBox="0 0 280 170" role="img" aria-label="Ilustração original de Luce sorrindo junto a pequenas flores">
+        <path d="M15 152 Q80 119 142 145 T265 135 V170 H15Z" fill="#b9d094"/><path d="M69 165 Q120 142 158 145 T225 132" fill="none" stroke="#d2ae6d" stroke-width="12" stroke-linecap="round"/>
+        <g transform="translate(130 57) scale(1.15)"><ellipse cy="93" rx="26" ry="5" fill="#57754c" opacity=".22"/><path d="M-19 51 Q0 43 18 51 L22 82 Q0 90-21 81Z" fill="#f3c65d"/><path d="M-14 53 Q0 47 14 53 L13 74 Q0 79-13 74Z" fill="#79b5ad"/><path d="M-10 81l-3 12m23-12 4 12" stroke="#a96b56" stroke-width="6" stroke-linecap="round"/><path d="M-18 57l-9 14m42-14 9 12" stroke="#f1bf93" stroke-width="7" stroke-linecap="round"/><path d="M-22 12Q-27-15-2-19 22-20 24 7l-3 34q-18 14-36-1z" fill="#dd8e43"/><path d="M-21 11q-15-17-1-29 13-13 23-2 9-14 20 1 10 17-1 30l-2-17Q7-15-3-7q-10-7-17 5z" fill="#e9a54c"/><path d="M-19 16q-10 14-2 24m38-24q11 10 4 23" fill="none" stroke="#68a6a1" stroke-width="7" stroke-linecap="round"/><path d="M-16 19Q0 8 16 19l1 18Q14 53 0 54q-15-2-17-18z" fill="#f2c39c"/><path d="M-9 31q3-3 6 0m8 0q3-3 6 0m-11 11q5 4 10 0" fill="none" stroke="#435650" stroke-width="2.4" stroke-linecap="round"/><path d="M0-18v8m-5-4h10" stroke="#f8e4a2" stroke-width="2.5" stroke-linecap="round"/></g>
+        <g fill="#fff5d2"><path d="M34 127q7-16 14 0 7-16 14 0-10 15-14 24-4-9-14-24"/><path d="M218 112q7-16 14 0 7-16 14 0-10 15-14 24-4-9-14-24"/></g><g fill="#df8874"><circle cx="48" cy="126" r="4"/><circle cx="232" cy="111" r="4"/></g>
+      </svg>
+      <p class="eyebrow">Uma história de fé, atenção e alegria</p>
+      <h2>A Jornada da Luce até a Santa Missa</h2>
+      <p>A Luce está a caminho da igreja. Ajude-a a resolver três etapas cheias de desafios e descubra como cada boa ideia a aproxima da celebração.</p>
+      <button class="primary-button" id="startButton" type="button">Começar aventura</button>
+    </div>
+  </div>
+  <div class="screen-cover" id="finishScreen" hidden>
+    <div class="cover-card">
+      <svg class="inside-art" viewBox="0 0 400 180" role="img" aria-label="Interior acolhedor de uma igreja com vitrais, bancos, altar e cruz">
+        <rect width="400" height="180" rx="5" fill="#e7f0e8"/><path d="M30 170V68L200 18 370 68V170Z" fill="#fbf3dd" stroke="#ac9674" stroke-width="3"/><path d="M20 70 200 12 380 70" fill="none" stroke="#a66a54" stroke-width="8"/>
+        <path d="M75 79v43m0-32v21m-9-10h18" stroke="#91794f" stroke-width="4"/><path d="M325 79v43m0-32v21m-9-10h18" stroke="#91794f" stroke-width="4"/><path d="M56 80q19-23 38 0v42H56zm230 0q19-23 38 0v42h-38z" fill="#9cc8cf" stroke="#7c997d" stroke-width="3"/><path d="M75 70v52m-19-22h38m231-30v52m-19-22h38" stroke="#f2d67c" stroke-width="3"/>
+        <rect x="164" y="104" width="72" height="20" fill="#c68b65"/><path d="M155 104h90l-9-10h-72z" fill="#e1bd7a"/><path d="M200 53v37m-12-25h24" stroke="#8e7048" stroke-width="5" stroke-linecap="round"/>
+        <g fill="#9b7758"><path d="M48 146h105v8H48zm10-9h88v7H58zm-3 17h8v14h-8zm79 0h8v14h-8z"/><path d="M247 146h105v8H247zm10-9h88v7h-88zm-3 17h8v14h-8zm79 0h8v14h-8z"/></g>
+        <g transform="translate(201 115) scale(.42)"><path d="M-18 40Q0 34 18 40l3 31Q0 80-21 70z" fill="#f3c65d"/><path d="M-20 2Q-24-25 0-29 24-28 22 2l-3 30Q0 45-20 31z" fill="#e9a54c"/><path d="M-17 6q-13-16 0-29 12-11 20 0 8-12 18 1 8 13-1 25l-3-16Q5-19-2-11q-9-7-15 4z" fill="#68a6a1"/><path d="M-15 4Q0-7 15 4v17Q13 37 0 38q-14-2-16-17z" fill="#f2c39c"/><path d="M-8 15q3-3 6 0m8 0q3-3 6 0m-11 9q5 4 10 0" fill="none" stroke="#435650" stroke-width="3"/></g>
+      </svg>
+      <p class="eyebrow">Uma chegada cheia de alegria</p>
+      <h2>Parabéns, Luce!</h2>
+      <p>Parabéns! Você ajudou a Luce a chegar à igreja e participar da Santa Missa! Com fé, atenção e raciocínio, você superou todos os desafios!</p>
+      <div class="score-modal" id="finalScore">Sua pontuação: 0 pontos</div>
+      <div class="end-actions"><button class="primary-button" id="playAgain" type="button">Jogar novamente</button><button class="secondary-button" id="showScore" type="button">Ver minha pontuação</button></div>
+      <p id="scoreMessage" class="sr-only" aria-live="polite"></p>
+    </div>
+  </div>
+  <script>
+    (() => {
+      const stages = [
+        {
+          title: "O Caminho das Sequências", phase: "FASE 1 · PERCEPÇÃO DE PADRÕES", subtitle: "Luce está começando sua caminhada",
+          challenges: [
+            { title: "Que número continua?", prompt: "Observe a sequência. A cada passo, somamos 2. Qual número vem depois?", visual: "2　·　4　·　6　·　8　·　?", options: ["9", "10", "12"], answer: 1, explain: "A sequência aumenta de 2 em 2: 2, 4, 6, 8 e 10." },
+            { title: "Qual figura vem a seguir?", prompt: "As formas se alternam: uma redonda, outra com quatro lados. O que vem agora?", visual: "🔵　🟨　🔵　🟨　?", options: ["🔵 Círculo", "🟨 Quadrado", "🔺 Triângulo"], answer: 0, explain: "O padrão alterna círculo e quadrado. Depois do quadrado, volta o círculo." },
+            { title: "Descubra a cor que falta", prompt: "O padrão repete duas cores, sempre na mesma ordem.", visual: "🔵　🟡　🔵　🟡　?", options: ["🟢 Verde", "🔵 Azul", "🟡 Amarelo"], answer: 1, explain: "Azul e amarelo se alternam. Depois do amarelo, a cor volta a ser azul." }
+          ]
+        },
+        {
+          title: "Os Enigmas do Caminho", phase: "FASE 2 · RACIOCÍNIO DEDUTIVO", subtitle: "Luce já percorreu metade do caminho", challenges: [
+            { title: "Uma cesta de maçãs", prompt: "Luce tinha 3 maçãs e ganhou mais 2. Quantas maçãs ela tem agora?", visual: "🍎　🍎　🍎　＋　🍎　🍎", options: ["4 maçãs", "5 maçãs", "6 maçãs"], answer: 1, explain: "Juntando 3 maçãs com mais 2, fazemos 3 + 2 = 5." },
+            { title: "Quem chegou por último?", prompt: "Pedro chegou antes de Ana. Ana chegou antes de Lucas. Quem chegou por último?", visual: "🏃　→　🏃　→　🏃", options: ["Pedro", "Ana", "Lucas"], answer: 2, explain: "A ordem é Pedro, Ana e Lucas. Como Lucas chegou depois de Ana, foi o último." },
+            { title: "Rosas e flores", prompt: "Todas as rosas são flores. Algumas flores são amarelas. Podemos afirmar que todas as rosas são amarelas?", visual: "🌹　🌷　🌼", options: ["Sim, todas são amarelas", "Não é possível concluir", "Nenhuma rosa é amarela"], answer: 1, explain: "Sabemos que algumas flores são amarelas, mas isso não diz a cor de todas as rosas. Então não é possível concluir." }
+          ]
+        },
+        {
+          title: "O Desafio Final: A Porta da Igreja", phase: "FASE 3 · ATENÇÃO E DECISÃO", subtitle: "A igreja está logo ali: falta encontrar a entrada", challenges: [
+            { title: "Encontre o caminho sem obstáculos", prompt: "Siga do início até a porta. Qual trilha passa apenas pelas casas livres?", kind: "maze", options: ["Trilha das flores", "Trilha das nuvens", "Trilha das estrelas"], answer: 0, explain: "A trilha das flores segue pelas casas livres até a porta. As outras encontram um obstáculo." },
+            { title: "Organize os símbolos", prompt: "Coloque os cartões em ordem crescente: comece com uma estrela e termine com três.", kind: "order", order: [2, 0, 1], explain: "A regra é aumentar uma estrela a cada passo: uma, duas e três." },
+            { title: "A última pista", prompt: "A porta certa tem uma cruz dourada. A porta azul não é a certa. A porta verde fica fechada. Qual porta a Luce deve escolher?", visual: "🚪 azul　　🚪 verde　　🚪 dourada ✝", options: ["A porta azul", "A porta verde", "A porta dourada com a cruz"], answer: 2, explain: "As pistas eliminam a porta azul e a verde. Resta a porta dourada com a cruz." }
+          ]
+        }
+      ];
+      let stageIndex = 0;
+      let challengeIndex = 0;
+      let score = 0;
+      let solved = false;
+      let soundOn = false;
+      let audioContext;
+      let musicTimer;
+      let musicNote = 0;
+      const $ = (selector) => document.querySelector(selector);
+      const startScreen = $("#startScreen");
+      const finishScreen = $("#finishScreen");
+      const questionTitle = $("#questionTitle");
+      const questionPrompt = $("#questionPrompt");
+      const challengeVisual = $("#challengeVisual");
+      const answerArea = $("#answerArea");
+      const feedback = $("#feedback");
+      const continueArea = $("#continueArea");
+      const progressTrack = document.querySelector(".progress-track");
+      const allChallenges = stages.reduce((sum, stage) => sum + stage.challenges.length, 0);
+
+      function playTone(success) {
+        if (!soundOn) return;
+        try {
+          audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+          if (audioContext.state === "suspended") audioContext.resume();
+          const oscillator = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+          oscillator.type = "sine";
+          oscillator.frequency.value = success ? 660 : 260;
+          gain.gain.setValueAtTime(.0001, audioContext.currentTime);
+          gain.gain.exponentialRampToValueAtTime(.08, audioContext.currentTime + .025);
+          gain.gain.exponentialRampToValueAtTime(.0001, audioContext.currentTime + .24);
+          oscillator.connect(gain); gain.connect(audioContext.destination);
+          oscillator.start(); oscillator.stop(audioContext.currentTime + .25);
+        } catch (_) { /* O jogo continua sem áudio se o navegador não oferecer suporte. */ }
+      }
+      function playAmbientNote() {
+        if (!soundOn) return;
+        try {
+          audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+          if (audioContext.state === "suspended") audioContext.resume();
+          const notes = [392, 494, 587, 494, 440, 523, 659, 523];
+          const oscillator = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+          const now = audioContext.currentTime;
+          oscillator.type = "sine";
+          oscillator.frequency.value = notes[musicNote++ % notes.length];
+          gain.gain.setValueAtTime(.0001, now);
+          gain.gain.exponentialRampToValueAtTime(.018, now + .25);
+          gain.gain.exponentialRampToValueAtTime(.0001, now + 1.8);
+          oscillator.connect(gain); gain.connect(audioContext.destination);
+          oscillator.start(now); oscillator.stop(now + 1.85);
+        } catch (_) { /* O jogo continua sem áudio se o navegador não oferecer suporte. */ }
+      }
+      function updateScene() {
+        const completed = stageIndex * 3 + challengeIndex;
+        const x = 185 + completed * 67;
+        $("#luce").setAttribute("transform", `translate(${x} 238)`);
+        const ratio = completed / allChallenges;
+        $("#progressFill").style.width = `${ratio * 100}%`;
+        progressTrack.setAttribute("aria-valuenow", String(completed));
+        $("#stageStamp").textContent = String(Math.min(stageIndex + 1, 3));
+        $("#journeyTitle").textContent = stages[Math.min(stageIndex, 2)].title;
+        $("#journeySubtitle").textContent = stageIndex < 3 ? stages[stageIndex].subtitle : "Luce chegou à igreja!";
+        $("#scoreValue").textContent = String(score);
+        $("#church").style.filter = `drop-shadow(0 ${stageIndex * 2}px ${stageIndex * 2}px rgba(76,74,48,.${stageIndex + 1}))`;
+        document.querySelectorAll("#phaseList li").forEach((item, index) => {
+          item.classList.toggle("active", index === stageIndex);
+          item.classList.toggle("done", index < stageIndex);
+          item.querySelector(".phase-dot").textContent = index < stageIndex ? "✓" : String(index + 1);
+        });
+      }
+      function renderChallenge() {
+        if (stageIndex >= stages.length) { finishGame(); return; }
+        solved = false;
+        const stage = stages[stageIndex];
+        const challenge = stage.challenges[challengeIndex];
+        $("#phaseLabel").textContent = stage.phase;
+        $("#questionCount").textContent = `Desafio ${challengeIndex + 1} de ${stage.challenges.length}`;
+        questionTitle.textContent = challenge.title;
+        questionPrompt.textContent = challenge.prompt;
+        challengeVisual.innerHTML = "";
+        if (challenge.visual && challenge.kind !== "order") {
+          const visual = document.createElement("div");
+          visual.className = "visual-prompt";
+          visual.textContent = challenge.visual;
+          challengeVisual.append(visual);
+        }
+        if (challenge.kind === "order") {
+          const order = [...challenge.order];
+          const tiles = document.createElement("div"); tiles.className = "order-sequence";
+          tiles.setAttribute("aria-label", "Cartões de estrelas fora de ordem");
+          const tileButtons = order.map((value) => {
+            const tile = document.createElement("button");
+            tile.type = "button"; tile.className = "order-tile"; tile.textContent = "★".repeat(value + 1);
+            tile.setAttribute("aria-label", `${value + 1} estrela${value ? "s" : ""}`);
+            tile.addEventListener("click", () => {
+              if (tile.dataset.selected === "true") {
+                tile.dataset.selected = "false"; tile.classList.remove("selected"); return;
+              }
+              const selectedIndex = tileButtons.findIndex((item) => item.dataset.selected === "true");
+              if (selectedIndex < 0) {
+                tile.dataset.selected = "true"; tile.classList.add("selected"); return;
+              }
+              const targetIndex = tileButtons.indexOf(tile);
+              [order[selectedIndex], order[targetIndex]] = [order[targetIndex], order[selectedIndex]];
+              tileButtons.forEach((item, index) => {
+                item.textContent = "★".repeat(order[index] + 1);
+                item.setAttribute("aria-label", `${order[index] + 1} estrela${order[index] ? "s" : ""}`);
+                item.dataset.selected = "false"; item.classList.remove("selected");
+              });
+            });
+            tiles.append(tile); return tile;
+          });
+          challengeVisual.append(tiles);
+          const help = document.createElement("p"); help.className = "order-help"; help.textContent = "Toque em dois cartões para trocar suas posições.";
+          challengeVisual.append(help);
+          const verify = document.createElement("button"); verify.type = "button"; verify.className = "answer-button"; verify.textContent = "Verificar ordem";
+          verify.addEventListener("click", () => submitAnswer(order.join(",") === "0,1,2", verify, true));
+          answerArea.append(verify);
+        }
+        if (challenge.kind === "maze") {
+          const maze = document.createElement("div"); maze.className = "maze"; maze.setAttribute("aria-label", "Labirinto: escolha uma trilha até a igreja");
+          ["🏁", "🌿", "🚪", "🌼", "🌿", "🌼", "🌿", "🪨", "🌿"].forEach((symbol, index) => {
+            const cell = document.createElement("div"); cell.className = `maze-cell ${[0].includes(index) ? "start" : [2].includes(index) ? "goal" : [1,3,4,6,7,8].includes(index) ? "walk" : "wall"}`; cell.textContent = symbol; maze.append(cell);
+          });
+          challengeVisual.append(maze);
+        }
+        answerArea.replaceChildren();
+        challenge.options?.forEach((option, index) => {
+          const button = document.createElement("button");
+          button.type = "button"; button.className = challenge.kind === "maze" ? "path-button" : "answer-button";
+          button.textContent = challenge.kind === "maze" ? `↗ ${option}` : option;
+          button.addEventListener("click", () => checkAnswer(index, button)); answerArea.append(button);
+        });
+        feedback.className = "feedback";
+        feedback.textContent = "Observe com atenção e escolha uma resposta. Se precisar, tente novamente!";
+        continueArea.replaceChildren();
+        updateScene();
+      }
+      function checkAnswer(selected, button) {
+        if (solved) return;
+        const challenge = stages[stageIndex].challenges[challengeIndex];
+        submitAnswer(selected === challenge.answer, button);
+      }
+      function submitAnswer(isCorrect, button, allowRetry = false) {
+        if (solved) return;
+        const challenge = stages[stageIndex].challenges[challengeIndex];
+        if (isCorrect) {
+          solved = true; score += 10; button.classList.add("correct");
+          answerArea.querySelectorAll("button").forEach((item) => { item.disabled = true; });
+          feedback.textContent = `Muito bem! ${challenge.explain} A Luce avançou um pouco mais no caminho!`;
+          feedback.className = "feedback good";
+          $(".journey").classList.add("celebrate"); setTimeout(() => $(".journey").classList.remove("celebrate"), 1100);
+          playTone(true); updateScene();
+          const next = document.createElement("button"); next.type = "button"; next.className = "next-button";
+          next.textContent = challengeIndex === 2 && stageIndex === 2 ? "Chegar à igreja" : challengeIndex === 2 ? "Ir para a próxima fase" : "Continuar caminho";
+          next.addEventListener("click", advance); continueArea.replaceChildren(next);
+        } else {
+          if (!allowRetry) { button.classList.add("incorrect"); button.disabled = true; }
+          feedback.textContent = allowRetry ? `Ainda não. ${challenge.explain} Troque os cartões e tente mais uma vez.` : `Ainda não. ${challenge.explain} Tente outra alternativa.`;
+          feedback.className = "feedback bad"; playTone(false);
+          if (!allowRetry && ![...answerArea.querySelectorAll("button")].some((answer) => !answer.disabled)) {
+            const retry = document.createElement("button"); retry.type = "button"; retry.className = "retry-button"; retry.textContent = "↻ Tentar este desafio novamente";
+            retry.addEventListener("click", renderChallenge); continueArea.replaceChildren(retry);
+          }
+        }
+      }
+      function advance() {
+        if (challengeIndex < 2) challengeIndex++;
+        else { stageIndex++; challengeIndex = 0; }
+        if (stageIndex >= stages.length) finishGame(); else renderChallenge();
+      }
+      function finishGame() {
+        stageIndex = stages.length;
+        $("#progressFill").style.width = "100%"; progressTrack.setAttribute("aria-valuenow", String(allChallenges));
+        $("#journeySubtitle").textContent = "Luce chegou à igreja!";
+        $("#journeyTitle").textContent = "A jornada foi concluída";
+        $("#scoreValue").textContent = String(score);
+        $("#finalScore").textContent = `Sua pontuação: ${score} pontos`;
+        $("#luce").setAttribute("transform", "translate(785 238)");
+        document.querySelectorAll("#phaseList li").forEach((item) => { item.classList.remove("active"); item.classList.add("done"); item.querySelector(".phase-dot").textContent = "✓"; });
+        $("#church").classList.add("door-open");
+        finishScreen.hidden = false;
+        playTone(true);
+      }
+      function resetGame(showStart = true) {
+        stageIndex = 0; challengeIndex = 0; score = 0; solved = false;
+        finishScreen.hidden = true; $("#church").classList.remove("door-open");
+        if (showStart) startScreen.hidden = false;
+        renderChallenge();
+      }
+      $("#startButton").addEventListener("click", () => { startScreen.hidden = true; renderChallenge(); });
+      $("#restartTop").addEventListener("click", () => resetGame(true));
+      $("#restartBottom").addEventListener("click", () => resetGame(true));
+      $("#playAgain").addEventListener("click", () => resetGame(true));
+      $("#showScore").addEventListener("click", () => { $("#scoreMessage").textContent = `Você fez ${score} pontos. Parabéns pela jornada!`; $("#finalScore").textContent = `Sua pontuação final: ${score} pontos`; });
+      $("#soundToggle").addEventListener("click", (event) => {
+        soundOn = !soundOn;
+        if (musicTimer) { clearInterval(musicTimer); musicTimer = undefined; }
+        event.currentTarget.setAttribute("aria-pressed", String(soundOn));
+        event.currentTarget.setAttribute("aria-label", soundOn ? "Desativar sons" : "Ativar sons");
+        $("#soundCaption").textContent = soundOn ? "Trilha e sons ativados" : "Som desligado";
+        if (soundOn) { playAmbientNote(); musicTimer = setInterval(playAmbientNote, 2200); playTone(true); }
+      });
+      renderChallenge();
+    })();
+  </script>
+</body>
+</html>
